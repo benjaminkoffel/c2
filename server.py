@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import collections
 import datetime
 import random
@@ -36,5 +37,8 @@ def command():
     return ''
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('port', type=int, nargs=1)
+    args = parser.parse_args()
     print('SECRET:', secret)
-    app.run(host='0.0.0.0', port=4444)
+    app.run(host='0.0.0.0', port=args.port[0], ssl_context=('local.crt', 'local.key'), threaded=True)
