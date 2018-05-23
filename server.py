@@ -13,8 +13,12 @@ secret = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) 
 
 hosts = {}
 
+max_content_length = 8196
+
 @app.route('/', methods=['POST'])
 def index():
+    if flask.request.content_length > max_content_length:
+        return ''
     iden, output = flask.request.get_data(cache=False, as_text=True).split(':', 1)
     if iden not in hosts:
         hosts[iden] = {'cmd': collections.deque(), 'out': collections.deque()}
@@ -25,6 +29,8 @@ def index():
     
 @app.route('/cmd', methods=['POST'])
 def command():
+    if flask.request.content_length > max_content_length:
+        return ''
     key, cmd, iden, parameters = flask.request.get_data(cache=False, as_text=True).split(':', 3)
     if key != secret:
         time.sleep(1)
