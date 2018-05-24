@@ -6,6 +6,7 @@ import random
 import string
 import time
 import flask
+from flask_sslify import SSLify
 
 app = flask.Flask(__name__)
 
@@ -44,7 +45,10 @@ def command():
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('port', type=int, nargs=1)
+    parser.add_argument('--port', type=int, required=True)
+    parser.add_argument('--cert')
+    parser.add_argument('--key')
     args = parser.parse_args()
+    sslconfig = (args.cert, args.key) if args.cert and args.key else None
     print('SECRET:', secret)
-    app.run(host='0.0.0.0', port=args.port[0], ssl_context=('local.crt', 'local.key'), threaded=True)
+    app.run(host='0.0.0.0', port=args.port, ssl_context=sslconfig, threaded=True)
