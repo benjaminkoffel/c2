@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# install apache with https redirection and self signed cert
 apt install apache2
 /etc/init.d/apache2 restart
 a2enmod rewrite proxy proxy_http ssl
@@ -7,9 +9,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj '/CN=local/O=local/C=U
 cat > /etc/apache2/sites-available/default-ssl.conf <<EOL
 <IfModule mod_ssl.c>
     <VirtualHost *:443>
-        ServerAdmin admin@sec.myseek.xyz
-        ServerName proxy1.sec.myseek.xyz
-        ServerAlias proxy1.sec.myseek.xyz
+        ServerName www.domain.com
         DocumentRoot /var/www/html
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -23,8 +23,8 @@ cat > /etc/apache2/sites-available/default-ssl.conf <<EOL
                         SSLOptions +StdEnvVars
         </Directory>
         BrowserMatch "MSIE [2-6]" \
-                       nokeepalive ssl-unclean-shutdown \
-                       downgrade-1.0 force-response-1.0
+                        nokeepalive ssl-unclean-shutdown \
+                        downgrade-1.0 force-response-1.0
         BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
         SSLProxyEngine On
         ProxyPass / https://c2.com/
@@ -36,4 +36,14 @@ cat > /etc/apache2/sites-available/default-ssl.conf <<EOL
 </IfModule>
 EOL
 a2ensite default-ssl.conf
+/etc/init.d/apache2 restart
+
+# (OPTIONAL) create certificate for apache using let's encrypt
+apt install software-properties-common
+add-apt-repository ppa:certbot/certbot
+apt update
+apt install python-certbot-apache 
+certbot --apache
+#certbot --apache certonly
+#certbot renew --dry-run
 /etc/init.d/apache2 restart
