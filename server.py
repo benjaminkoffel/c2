@@ -6,7 +6,6 @@ import random
 import string
 import time
 import flask
-from flask_sslify import SSLify
 
 app = flask.Flask(__name__)
 
