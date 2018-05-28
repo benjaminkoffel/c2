@@ -12,8 +12,7 @@ import flask.logging
 app = flask.Flask(__name__)
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
-app.logger.handlers = gunicorn_logger.handlers
-app.logger.addHandler(flask.logging.default_handler)
+app.logger.handlers = gunicorn_logger.handlers if gunicorn_logger.handlers else [flask.logging.default_handler]
 app.logger.setLevel(logging.INFO)
 
 max_content_length = 8196
