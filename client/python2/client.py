@@ -6,7 +6,7 @@ import subprocess
 import time
 
 servers = ['x.x.x.x:x']
-iden = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(4))
+iden = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(8))
 print iden
 output = ''
 while True:
