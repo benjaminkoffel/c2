@@ -2,6 +2,13 @@
 
 Simplistic C2 infra using fairly dumb beacon clients. 
 
+## Usage
+
+```
+python3 -m pip install -r requirements.txt
+gunicorn -w 1 --threads 4 server:app -b 127.0.0.1:8000
+```
+
 ## Server Specification
 
 ```

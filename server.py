@@ -9,11 +9,13 @@ import flask
 
 app = flask.Flask(__name__)
 
-secret = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(8))
+max_content_length = 8196
 
 hosts = {}
 
-max_content_length = 8196
+secret = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(8))
+
+print('SERVICE INITIATED WITH KEY:', secret)
 
 @app.route('/', methods=['POST'])
 def index():
@@ -65,5 +67,4 @@ if __name__=='__main__':
     parser.add_argument('--key')
     args = parser.parse_args()
     sslconfig = (args.cert, args.key) if args.cert and args.key else None
-    print('SERVICE INITIATED WITH KEY:', secret)
-    app.run(host='0.0.0.0', port=args.port, ssl_context=sslconfig, threaded=True)
+    app.run(host='0.0.0.0', port=args.port, ssl_context=sslconfig)
