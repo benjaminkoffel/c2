@@ -18,10 +18,12 @@ max_content_length = 8196
 @app.route('/', methods=['POST'])
 def index():
     if flask.request.content_length > max_content_length:
+        print('DENIED CLIENT MAXLEN:', flask.request.content_length)
         time.sleep(1)
         return ''
     iden, output = flask.request.get_data(cache=False, as_text=True).split(':', 1)
     if iden not in hosts:
+        print('DENIED CLIENT KEY:', iden)
         time.sleep(1)
         return ''
     hosts[iden]['tim'] = datetime.datetime.utcnow()
@@ -32,10 +34,12 @@ def index():
 @app.route('/cmd', methods=['POST'])
 def command():
     if flask.request.content_length > max_content_length:
+        print('DENIED COMMAND MAXLEN:', flask.request.content_length)
         time.sleep(1)
         return ''
     key, cmd, iden, parameters = flask.request.get_data(cache=False, as_text=True).split(':', 3)
     if key != secret:
+        print('DENIED COMMAND KEY:', key)
         time.sleep(1)
         return ''
     if cmd == 'L':
@@ -61,5 +65,5 @@ if __name__=='__main__':
     parser.add_argument('--key')
     args = parser.parse_args()
     sslconfig = (args.cert, args.key) if args.cert and args.key else None
-    print('SECRET:', secret)
+    print('SERVICE INITIATED WITH KEY:', secret)
     app.run(host='0.0.0.0', port=args.port, ssl_context=sslconfig, threaded=True)
