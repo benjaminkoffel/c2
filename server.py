@@ -2,12 +2,19 @@
 import argparse
 import collections
 import datetime
+import logging
 import random
 import string
 import time
 import flask
+import flask.logging
 
 app = flask.Flask(__name__)
+
+gunicorn_logger = logging.getLogger('gunicorn.error')
+app.logger.handlers = gunicorn_logger.handlers
+app.logger.addHandler(flask.logging.default_handler)
+app.logger.setLevel(logging.INFO)
 
 max_content_length = 8196
 
@@ -15,17 +22,17 @@ hosts = {}
 
 secret = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(8))
 
-print('SERVICE INITIATED WITH KEY:', secret)
+app.logger.info('SERVICE INITIATED: %s', secret)
 
 @app.route('/', methods=['POST'])
 def index():
     if flask.request.content_length > max_content_length:
-        print('DENIED CLIENT MAXLEN:', flask.request.content_length)
+        app.logger.info('DENIED CLIENT MAXLEN: %s', flask.request.content_length)
         time.sleep(1)
         return ''
     iden, output = flask.request.get_data(cache=False, as_text=True).split(':', 1)
     if iden not in hosts:
-        print('DENIED CLIENT KEY:', iden)
+        app.logger.info('DENIED CLIENT KEY: %s', iden)
         time.sleep(1)
         return ''
     hosts[iden]['tim'] = datetime.datetime.utcnow()
@@ -36,12 +43,12 @@ def index():
 @app.route('/cmd', methods=['POST'])
 def command():
     if flask.request.content_length > max_content_length:
-        print('DENIED COMMAND MAXLEN:', flask.request.content_length)
+        app.logger.info('DENIED COMMAND MAXLEN: %s', flask.request.content_length)
         time.sleep(1)
         return ''
     key, cmd, iden, parameters = flask.request.get_data(cache=False, as_text=True).split(':', 3)
     if key != secret:
-        print('DENIED COMMAND KEY:', key)
+        app.logger.info('DENIED COMMAND KEY: %s', key)
         time.sleep(1)
         return ''
     if cmd == 'L':
